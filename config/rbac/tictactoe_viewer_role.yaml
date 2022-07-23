@@ -1,0 +1,20 @@
+# permissions for end users to view tictactoes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tictactoe-viewer-role
+rules:
+- apiGroups:
+  - games.vlad.io
+  resources:
+  - tictactoes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - games.vlad.io
+  resources:
+  - tictactoes/status
+  verbs:
+  - get

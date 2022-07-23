@@ -1,0 +1,5 @@
+apiVersion: games.vlad.io/v1
+kind: TicTacToe
+metadata:
+  name: tictactoe-sample
+spec:
