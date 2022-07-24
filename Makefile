@@ -36,7 +36,7 @@ IMAGE_TAG_BASE ?= vlad.io/games-operator
 BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= docker.io/vladpbr/games-operator:${VERSION}
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.22
 
@@ -117,8 +117,8 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
 
-# Generate yaml bundle for the operator
-yaml-bundle: manifests kustomize
+.PHONY: yaml-bundle
+yaml-bundle: manifests kustomize ## Generate yaml bundle for the operator
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	mkdir -p deploy
 	$(KUSTOMIZE) build config/default > deploy/bundle.yaml
@@ -164,16 +164,8 @@ bundle-build: ## Build the bundle image.
 bundle-push: ## Push the bundle image.
 	$(MAKE) docker-push IMG=$(BUNDLE_IMG)
 
-# Build the docker image
-docker-build:
-	docker build -t ${IMG} .
-
-# Push the docker image
-docker-push:
-	docker push ${IMG}
-
-# Build and push in one go
-build-push: docker-build docker-push
+.PHONY: build-push
+build-push: docker-build docker-push ## Build and push in one go
 
 .PHONY: opm
 OPM = ./bin/opm

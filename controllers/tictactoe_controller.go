@@ -132,7 +132,7 @@ func (t *Table) set(s Slot, ss SlotSymbol) {
 
 func (t Table) String() string {
 
-	out := fmt.Sprintf("   %s     %s     %s  \n", ColumnA, ColumnB, ColumnC)
+	out := fmt.Sprintf("\n   %s     %s     %s  \n", ColumnA, ColumnB, ColumnC)
 
 	// iterate rows
 	for _, rowPair := range []struct {
@@ -166,7 +166,13 @@ func (t Table) String() string {
 
 	}
 
-	return out
+	out += "\n"
+
+	// YAML marshaller won't display multiline string properly
+	// if a substring which matches `\n[ ]+\n` is found
+	//
+	// sanitize output for proper multiline display
+	return strings.ReplaceAll(strings.ReplaceAll(out, "     \n", "\n"), "  \n", "\n")
 }
 
 func (t *Table) read(ttt *gamesv1.TicTacToe) {
@@ -174,22 +180,29 @@ func (t *Table) read(ttt *gamesv1.TicTacToe) {
 	if ttt.Status.Table != "" {
 
 		split := strings.Split(ttt.Status.Table, "\n")
+		var symbol SlotSymbol
 
 		for _, coordinate := range []struct {
 			x int
 			y int
 			s Slot
-		}{{2, 3, Slot{ColumnA, Row1}},
-			{2, 9, Slot{ColumnB, Row1}},
-			{2, 15, Slot{ColumnC, Row1}},
-			{5, 3, Slot{ColumnA, Row2}},
-			{5, 9, Slot{ColumnB, Row2}},
-			{5, 15, Slot{ColumnC, Row2}},
-			{8, 3, Slot{ColumnA, Row3}},
-			{8, 9, Slot{ColumnB, Row3}},
-			{8, 15, Slot{ColumnC, Row3}}} {
+		}{{3, 3, Slot{ColumnA, Row1}},
+			{3, 9, Slot{ColumnB, Row1}},
+			{3, 15, Slot{ColumnC, Row1}},
+			{6, 3, Slot{ColumnA, Row2}},
+			{6, 9, Slot{ColumnB, Row2}},
+			{6, 15, Slot{ColumnC, Row2}},
+			{9, 3, Slot{ColumnA, Row3}},
+			{9, 9, Slot{ColumnB, Row3}},
+			{9, 15, Slot{ColumnC, Row3}}} {
 
-			t.set(coordinate.s, SlotSymbol(split[coordinate.x][coordinate.y]))
+			if len(split[coordinate.x]) < coordinate.y {
+				symbol = SlotSymbolEmpty
+			} else {
+				symbol = SlotSymbol(split[coordinate.x][coordinate.y])
+			}
+
+			t.set(coordinate.s, symbol)
 		}
 	}
 }

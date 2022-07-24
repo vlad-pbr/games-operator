@@ -298,7 +298,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: docker.io/vladpbr/games-operator:0.1
+        image: docker.io/vladpbr/games-operator:0.0.1
         livenessProbe:
           httpGet:
             path: /healthz
