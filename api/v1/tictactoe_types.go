@@ -24,7 +24,7 @@ import (
 type TicTacToeSpec struct {
 
 	// User's move
-	// +kubebuilder:validation:Pattern:=^[a-cA-C][1-3]$
+	// +kubebuilder:validation:Pattern:=^[A-C][1-3]$
 	Move string `json:"move"`
 }
 
@@ -46,6 +46,9 @@ type TicTacToeStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:shortName=ttt
+//+kubebuilder:printcolumn:name="Turn",type=string,JSONPath=`.status.turn`
+//+kubebuilder:printcolumn:name="Winner",type=string,JSONPath=`.status.winner`
 
 // TicTacToe is the Schema for the tictactoes API
 type TicTacToe struct {
