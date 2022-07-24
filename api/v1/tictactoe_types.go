@@ -24,8 +24,13 @@ import (
 type TicTacToeSpec struct {
 
 	// User's move
-	// +kubebuilder:validation:Pattern:=^[A-C][1-3]$
+	// +kubebuilder:validation:Pattern:=(^[A-C][1-3]$)|^$
+	// +kubebuilder:default:=""
 	Move string `json:"move"`
+
+	// Whether the game is played between two actual players
+	// +kubebuilder:default:=false
+	PVP bool `json:"pvp"`
 }
 
 // TicTacToeStatus defines the observed state of TicTacToe
@@ -55,7 +60,7 @@ type TicTacToe struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   TicTacToeSpec   `json:"spec,omitempty"`
+	Spec   TicTacToeSpec   `json:"spec"`
 	Status TicTacToeStatus `json:"status,omitempty"`
 }
 

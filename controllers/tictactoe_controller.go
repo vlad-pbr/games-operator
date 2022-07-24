@@ -312,7 +312,6 @@ func performMove(ttt *gamesv1.TicTacToe) {
 
 		// store move in status
 		table.set(slot, currentSymbol)
-		ttt.Status.Table = table.String()
 		ttt.Status.MoveHistory = append(ttt.Status.MoveHistory, Move{currentSymbol, slot}.String())
 
 		// check for endgame
@@ -321,10 +320,12 @@ func performMove(ttt *gamesv1.TicTacToe) {
 			ttt.Status.Winner = string(currentSymbol)
 		} else if stalemate {
 			ttt.Status.Winner = "Draw"
-		} else {
+		} else if !ttt.Spec.PVP {
 			swapTurns(ttt)
 		}
 	}
+
+	ttt.Status.Table = table.String()
 }
 
 func swapTurns(ttt *gamesv1.TicTacToe) {
@@ -358,7 +359,7 @@ func (r *TicTacToeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	if ttt.Status.Table == "" {
 
 		// resolve first move
-		if ttt.Spec.Move != "" {
+		if ttt.Spec.Move != "" || ttt.Spec.PVP {
 			ttt.Status.Turn = gamesv1.IdentifierPlayer
 		} else {
 			ttt.Status.Turn = gamesv1.IdentifierComputer
