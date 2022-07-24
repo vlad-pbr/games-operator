@@ -16,3 +16,7 @@ resources:
 - auth_proxy_role.yaml
 - auth_proxy_role_binding.yaml
 - auth_proxy_client_clusterrole.yaml
+
+# Permission aggregates
+- aggregate-games-admin-edit.yaml
+- aggregate-games-view.yaml
