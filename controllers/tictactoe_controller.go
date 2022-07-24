@@ -316,10 +316,14 @@ func performMove(ttt *gamesv1.TicTacToe) {
 
 		// check for endgame
 		win, stalemate := resolveEndgame(table)
-		if win {
-			ttt.Status.Winner = string(currentSymbol)
-		} else if stalemate {
-			ttt.Status.Winner = "Draw"
+		if win || stalemate {
+			if win {
+				ttt.Status.Winner = string(currentSymbol)
+			} else {
+				ttt.Status.Winner = "Draw"
+			}
+
+			ttt.Status.Turn = ""
 		} else if !ttt.Spec.PVP {
 			swapTurns(ttt)
 		}
