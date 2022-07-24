@@ -196,22 +196,11 @@ func (t *Table) read(ttt *gamesv1.TicTacToe) {
 
 func (t *Table) getCurrentSymbol() SlotSymbol {
 
-	counter := 0
-
-	for _, ss := range *t {
-		if ss == SlotSymbolX {
-			counter++
-		} else if ss == SlotSymbolO {
-			counter--
-		}
-	}
-
-	if counter == 0 {
+	if len(*t)%2 == 0 {
 		return SlotSymbolX
-	} else {
-		return SlotSymbolO
 	}
 
+	return SlotSymbolO
 }
 
 func resolvePlayerSlot(ttt *gamesv1.TicTacToe) Slot {
@@ -227,7 +216,7 @@ func performPlayerMove(t Table, s Slot) (bool, Slot) {
 	return true, s
 }
 
-func performComputerMove(t Table, ss SlotSymbol) Slot {
+func performComputerMove(t Table) Slot {
 
 	// init possibilities array
 	availableSlots := []Slot{}
@@ -288,9 +277,6 @@ func performMove(ttt *gamesv1.TicTacToe) {
 	table := make(Table)
 	table.read(ttt)
 
-	// get current symbol
-	currentSymbol := table.getCurrentSymbol()
-
 	// define move result vars
 	var movePerformed bool
 	var slot Slot
@@ -303,10 +289,13 @@ func performMove(ttt *gamesv1.TicTacToe) {
 			movePerformed, slot = false, Slot{}
 		}
 	} else {
-		movePerformed, slot = true, performComputerMove(table, currentSymbol)
+		movePerformed, slot = true, performComputerMove(table)
 	}
 
 	if movePerformed {
+
+		// get current symbol
+		currentSymbol := table.getCurrentSymbol()
 
 		// store move in status
 		table.set(slot, currentSymbol)
@@ -363,7 +352,7 @@ func (r *TicTacToeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		}
 	}
 
-	// if new move was performed - swap turns
+	// perform move
 	performMove(ttt)
 
 	// update game status
